@@ -48,8 +48,33 @@ Each finding states its evidence and date, so it can be rechecked.
 - Does `Compound` contain placeholder values? Does `TyreLife` start above 1 for used sets?
 - Decode `TrackStatus` codes into explicit labels.
 
-### Remaining Milestone 1 steps
-- [x] Confirm cache reuse: second run faster and needed no login prompt (2026-10-24)
-- [x] Load 2024 Bahrain race (`--index 1`) and compare columns/missingness (2026-10-24)
-- [ ] Add `.gitattributes` to normalise line endings
-- [ ] Remove `scripts/test.py` (superseded by `check_fastf1_access.py`)
+### Milestone 1 summary (closed 2026-10-24)
+
+**Completed**
+- Environment confirmed: Windows 11, Python 3.13.14 venv, 15.4 GB RAM, CPU sufficient for now.
+- Package scaffold: `pyproject.toml` (fastf1 >= 3.9, pandas, pyyaml; pytest as dev extra) and `src/tire_strategy/__init__.py`, installed editable.
+- `.gitignore` excludes `data/*` (except `data/README.md`) and `outputs/`.
+- `configs/data.yaml` defines the sample (2023 and 2024 Bahrain GP races) and FastF1 load options.
+- `scripts/check_fastf1_access.py` loads a configured session into `data/raw/fastf1_cache/` and audits columns, dtypes and missingness.
+- FastF1 access resolved: historical data needs a free F1 account login (see finding above).
+
+**Checks run (manually, on the local machine)**
+- Editable install resolves `tire_strategy` from `src/`; `pip check` passed after the FastF1 3.9 upgrade.
+- `.gitignore` rules verified with `git check-ignore`.
+- Both races downloaded (17.0 MB cache); a repeat run was served from the cache without a login prompt.
+- No automated tests exist yet (`tests/` is empty by design until there is logic to test).
+
+**Not done / decided against**
+- `.gitattributes` line-ending policy: skipped by decision. Diffs of files saved with CRLF may show every line as changed.
+- `scripts/test.py` was kept, renamed to `scripts/load_data_test.py`.
+
+**Unresolved issues**
+- `scripts/load_data_test.py` uses `enable_cache("./configs/")`: running it writes FastF1 cache files into `configs/`, which is not git-ignored. Do not commit `configs/` wholesale after running it; consider pointing it at `data/raw/fastf1_cache/`.
+- `check_fastf1_access.py` holds logic (config reading, cache setup, session loading) that should move into `src/tire_strategy/` in Milestone 2.
+- Open data questions listed above.
+
+**Next: Milestone 2 (data extraction)**
+- Move config loading and session loading into the package (`config.py`, `data/fastf1_loader.py`).
+- Build a lap-level table with explicit dtypes and unit-named columns (`lap_time_seconds`, ...).
+- Add labelled (not deleted) exclusion flags: pit in/out laps, lap 1, track status (SC/VSC/flags), `IsAccurate`, `Deleted`, `FastF1Generated`.
+- Save a processed dataset plus metadata (sessions, FastF1 version, package version), and add the first unit tests.
