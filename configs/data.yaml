@@ -1,0 +1,26 @@
+# Data selection and acquisition settings.
+# Paths are relative to the repository root.
+
+fastf1:
+  cache_dir: data/raw/fastf1_cache
+
+  # What Session.load() should fetch. Telemetry is off for now:
+  # lap-level data is enough for Milestones 1-3 and telemetry is slow and large.
+  load:
+    laps: true
+    telemetry: false
+    weather: true
+    messages: true   # race control messages (flags, Safety Car)
+
+# Sessions in the first sample. `round` is the identifier we pass to FastF1;
+# `expected_event_name` is checked against what FastF1 returns, so a wrong
+# round number fails loudly instead of loading a different race.
+sessions:
+  - season: 2023
+    round: 1
+    expected_event_name: Bahrain Grand Prix
+    session: R
+  - season: 2024
+    round: 1
+    expected_event_name: Bahrain Grand Prix
+    session: R
